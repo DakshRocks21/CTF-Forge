@@ -1,0 +1,8 @@
+test_*
+config/***
+__pycache__/***
+*.pyc
+.env
+venv/
+build/
+downloader.spec
