@@ -1,0 +1,36 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e '.[dev]'
+      - name: Build binary
+        run: bash scripts/build.sh
+      - name: Rename binary
+        run: |
+          OS=${{ runner.os }}
+          mv dist/ctf-forge "dist/ctf-forge-${OS,,}"
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/ctf-forge-*
