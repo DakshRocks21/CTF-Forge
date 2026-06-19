@@ -80,12 +80,10 @@ class CTFdClient:
             raise CTFdAPIError(0, file_url, "could not derive a safe filename")
         dest_dir.mkdir(parents=True, exist_ok=True)
         full_url = file_url if file_url.startswith("http") else f"{self.base_url}{file_url}"
-        # Strip query string for the actual HTTP request
-        url_no_query = full_url.split("?", 1)[0]
         target = dest_dir / basename
-        with self.session.get(url_no_query, stream=True, timeout=self.timeout) as resp:
+        with self.session.get(full_url, stream=True, timeout=self.timeout) as resp:
             if resp.status_code != 200:
-                raise CTFdAPIError(resp.status_code, url_no_query, resp.text or "")
+                raise CTFdAPIError(resp.status_code, full_url, resp.text or "")
             with target.open("wb") as out:
                 for chunk in resp.iter_content(chunk_size=8192):
                     if chunk:
