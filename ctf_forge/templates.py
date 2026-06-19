@@ -6,6 +6,8 @@ from importlib import resources
 from importlib.resources.abc import Traversable
 from pathlib import Path
 
+from ._sanitize import safe_path_component
+
 _PLACEHOLDER = re.compile(r"%([a-zA-Z0-9_]+)%")
 _BUNDLED_PACKAGE = "ctf_forge.default_templates"
 
@@ -40,12 +42,17 @@ def _bundled_files(name: str) -> list[tuple[str, str]]:
 def category_template_files(category: str, config_dir: Path) -> list[tuple[str, str]]:
     """Return [(filename, content)] for the category, using the fallback chain.
 
+    The category is re-sanitized via safe_path_component as a defense-in-depth
+    measure: a CTFd-supplied value could otherwise traverse out of config_dir
+    via path separators or ".." segments.
+
     Order:
       1. ``<config_dir>/<category>/``
       2. ``<config_dir>/default/``
       3. bundled ``<category>``
       4. bundled ``default``
     """
+    category = safe_path_component(category)
     for sub in (category, "default"):
         candidate = config_dir / sub
         if candidate.is_dir():

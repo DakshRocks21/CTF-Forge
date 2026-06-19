@@ -28,6 +28,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e '.[dev]'
+      - name: Verify build is releasable
+        run: |
+          ruff check ctf_forge tests
+          mypy
+          pytest -v
       - name: Build binary
         run: ./scripts/build.sh
       - name: Rename binary

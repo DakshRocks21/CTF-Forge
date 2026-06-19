@@ -5,43 +5,15 @@ path-component sanitizer.
 """
 from __future__ import annotations
 
-import re
 from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Protocol
 
+from ._sanitize import safe_path_component as safe_path_component  # re-export
 from .ctfd import Challenge
 from .errors import WorkspaceError
 from .templates import category_template_files, render_template
-
-_UNSAFE_PATTERN = re.compile(r"[^\w\-. ]", re.UNICODE)
-_WHITESPACE_RUN = re.compile(r"\s+", re.UNICODE)
-_MAX_LEN = 80
-
-
-def safe_path_component(name: str, fallback_id: int | None = None) -> str:
-    """Return a string safe to use as a single path component.
-
-    Rules, applied in order:
-
-    1. Non-string inputs are coerced to an empty string.
-    2. If the input is empty, ``.``, or ``..``, short-circuit to
-       ``challenge-{fallback_id}`` (or ``challenge`` if no id given).
-    3. Substring ``../`` and ``./`` are rewritten to ``_._`` so the
-       result cannot start with a traversal-looking sequence.
-    4. Characters outside ``[\\w\\-. ]`` are replaced with ``_``.
-    5. Whitespace runs are collapsed into a single ``_``.
-    6. The result is truncated to 80 characters.
-    """
-    if not isinstance(name, str):
-        name = ""
-    if name in ("", ".", ".."):
-        return f"challenge-{fallback_id}" if fallback_id is not None else "challenge"
-    name = name.replace("../", "_._").replace("./", "_._")
-    replaced = _UNSAFE_PATTERN.sub("_", name)
-    collapsed = _WHITESPACE_RUN.sub("_", replaced)
-    return collapsed[:_MAX_LEN]
 
 
 class _Downloader(Protocol):
@@ -90,7 +62,7 @@ def setup_challenge(
     target_dir.mkdir(parents=True, exist_ok=True)
 
     placeholders = placeholders_for(challenge, base_url)
-    for filename, content in category_template_files(challenge.category, config_dir):
+    for filename, content in category_template_files(safe_category, config_dir):
         rendered = render_template(content, placeholders)
         (target_dir / filename).write_text(rendered, encoding="utf-8")
 

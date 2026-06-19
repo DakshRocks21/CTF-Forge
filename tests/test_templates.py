@@ -74,3 +74,16 @@ def test_init_user_config_does_not_overwrite(tmp_path: Path) -> None:
     user_file.write_text("# user-edited")
     init_user_config(config_dir)
     assert user_file.read_text() == "# user-edited"
+
+
+def test_traversal_category_falls_back_to_bundled(tmp_path: Path) -> None:
+    """A category string containing '..' or '/' must not traverse out
+    of config_dir. The fallback chain should still find bundled
+    templates."""
+    files = category_template_files("../../etc", tmp_path)
+    names = {n for n, _ in files}
+    assert "solve.py" in names
+    assert "solution.md" in names
+    # Sanity: we got the bundled default templates, not something from /etc.
+    contents = dict(files)
+    assert "%challname%" in contents["solve.py"]
