@@ -1,8 +1,26 @@
-test_*
-config/***
-__pycache__/***
-*.pyc
-.env
-venv/
+# Build artefacts
+dist/
 build/
-downloader.spec
+*.egg-info/
+*.spec
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+
+# Virtualenvs
+.venv/
+venv/
+env/
+
+# Secrets and local config
+.env
+!.example.env
+
+# OS
+.DS_Store
+Thumbs.db
