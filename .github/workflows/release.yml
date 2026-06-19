@@ -3,18 +3,22 @@ name: release
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
 
 permissions:
   contents: write
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            asset: ctf-forge-linux-x86_64
+          - os: macos-latest
+            asset: ctf-forge-macos-arm64
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -25,12 +29,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e '.[dev]'
       - name: Build binary
-        run: bash scripts/build.sh
+        run: ./scripts/build.sh
       - name: Rename binary
-        run: |
-          OS=${{ runner.os }}
-          mv dist/ctf-forge "dist/ctf-forge-${OS,,}"
-      - name: Upload to Release
+        run: mv dist/ctf-forge dist/${{ matrix.asset }}
+      - name: Smoke-test binary
+        run: ./dist/${{ matrix.asset }} --version
+      - name: Attach to release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/ctf-forge-*
+          files: dist/${{ matrix.asset }}
