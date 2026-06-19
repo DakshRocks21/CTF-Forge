@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 import responses
 
-from ctf_forge.ctfd import Challenge, CTFdClient
+from ctf_forge.ctfd import CTFdClient
 from ctf_forge.errors import CTFdAPIError
 
 
@@ -80,7 +80,9 @@ def test_get_challenges_aggregates_detail_calls(mocked_responses: responses.Requ
     assert by_id[2].hints == [{"content": "hint"}]
 
 
-def test_download_file_writes_to_dest_dir(tmp_path: Path, mocked_responses: responses.RequestsMock) -> None:
+def test_download_file_writes_to_dest_dir(
+    tmp_path: Path, mocked_responses: responses.RequestsMock
+) -> None:
     mocked_responses.add(
         responses.GET,
         "https://ctf.example.com/files/abc/flag.txt",

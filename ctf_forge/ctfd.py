@@ -58,7 +58,7 @@ class CTFdClient:
                 pool.map(lambda s: self.get_challenge_detail(int(s["id"])), summaries)
             )
         challenges: list[Challenge] = []
-        for summary, detail in zip(summaries, details):
+        for summary, detail in zip(summaries, details, strict=True):
             challenges.append(
                 Challenge(
                     id=int(detail["id"]),

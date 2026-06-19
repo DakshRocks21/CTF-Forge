@@ -5,9 +5,7 @@ import threading
 from pathlib import Path
 from typing import Any
 
-import pytest
-
-from ctf_forge.ctfd import Challenge, CTFdClient
+from ctf_forge.ctfd import Challenge
 from ctf_forge.workspace import (
     placeholders_for,
     setup_all_challenges,

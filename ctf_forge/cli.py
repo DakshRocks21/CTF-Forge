@@ -10,7 +10,7 @@ from pathlib import Path
 from . import __version__
 from .config import resolve_download_config
 from .ctfd import CTFdClient
-from .errors import CTFForgeError, ConfigError
+from .errors import ConfigError, CTFForgeError
 from .templates import init_user_config
 from .workspace import setup_all_challenges
 
@@ -29,7 +29,9 @@ def _build_parser() -> argparse.ArgumentParser:
     download.add_argument("--ctf-name", help="Local directory name for this CTF")
     download.add_argument("--output-dir", help="Where to put the CTF directory (default: .)")
     download.add_argument("--workers", type=int, default=4, help="Parallel workers (default: 4)")
-    download.add_argument("--skip-solved", action="store_true", help="Skip challenges marked solved")
+    download.add_argument(
+        "--skip-solved", action="store_true", help="Skip challenges marked solved"
+    )
     download.add_argument("--config-dir", help="User template directory (default: ./config)")
     download.set_defaults(func=_cmd_download)
 

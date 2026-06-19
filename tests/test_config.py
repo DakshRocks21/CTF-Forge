@@ -28,7 +28,9 @@ def test_cli_args_take_precedence(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("CTFD_URL", "https://env.example.com")
     monkeypatch.setenv("CTFD_TOKEN", "env-token")
     monkeypatch.setenv("CTF_NAME", "env-ctf")
-    cfg = resolve_download_config(_ns(url="https://cli.example.com/", token="cli", ctf_name="cli-ctf"))
+    cfg = resolve_download_config(
+        _ns(url="https://cli.example.com/", token="cli", ctf_name="cli-ctf")
+    )
     assert cfg.url == "https://cli.example.com"
     assert cfg.token == "cli"
     assert cfg.ctf_name == "cli-ctf"
@@ -43,7 +45,9 @@ def test_env_used_when_cli_missing(monkeypatch: pytest.MonkeyPatch) -> None:
     assert cfg.token == "env-token"
 
 
-def test_legacy_env_vars_accepted_with_warning(monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+def test_legacy_env_vars_accepted_with_warning(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
     monkeypatch.delenv("CTFD_URL", raising=False)
     monkeypatch.delenv("CTFD_TOKEN", raising=False)
     monkeypatch.setenv("BASE_URL", "https://legacy.example.com")
@@ -86,7 +90,9 @@ def test_returns_dataclass(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("CTFD_URL", "https://x")
     monkeypatch.setenv("CTFD_TOKEN", "t")
     monkeypatch.setenv("CTF_NAME", "c")
-    cfg = resolve_download_config(_ns(output_dir="./out", workers=8, skip_solved=True, config_dir="./tpl"))
+    cfg = resolve_download_config(
+        _ns(output_dir="./out", workers=8, skip_solved=True, config_dir="./tpl")
+    )
     assert isinstance(cfg, DownloadConfig)
     assert cfg.workers == 8
     assert cfg.skip_solved is True

@@ -6,9 +6,10 @@ path-component sanitizer.
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import Iterable, Protocol
+from typing import Protocol
 
 from .ctfd import Challenge
 from .errors import WorkspaceError
